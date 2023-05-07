@@ -1,8 +1,8 @@
-from sqlalchemy.orm import Session
-from app import models, schema
-
 from typing import List, Type
 
+from sqlalchemy.orm import Session
+
+from app import models
 from app.models import UserInfo
 
 

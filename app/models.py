@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean
-from .database import Base
+
+from app.database import Base
 
 
 class UserInfo(Base):
@@ -10,5 +11,3 @@ class UserInfo(Base):
     email = Column(String)
     password = Column(String)
     is_2fa_enabled = Column(Boolean, default=False)
-
-

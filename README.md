@@ -1,20 +1,26 @@
 # py-backend-app
-[FastAPI](https://fastapi.tiangolo.com)-based backend service which implements registration and login services with optional 2FA.
+
+[FastAPI](https://fastapi.tiangolo.com)-based backend service which implements registration and login services with
+optional 2FA.
 
 ### Clone the Repository
+
 First, clone the repository:
+
 ```bash
 $ git clone https://github.com/000emanresu111/py-backend-app.git
 ```
 
 ### Run PostgreSQL docker image
+
 ```bash
 $ docker compose up
 ```
 
 ### Launch server
+
 ```bash
-$ uvicorn app.main:app --host localhost --port 8086 --reload
+$ uvicorn main:app --host localhost --port 8086 --reload
 ```
 
 ### API documentation
@@ -41,10 +47,15 @@ This project uses [black](https://github.com/psf/black) code formatter.
 
 ## Solution overview
 
-- The backend service will provide three routes: one to register users, one to log them in, and a third one to handle the 2FA process if it's enabled. The communication protocol will be HTTP, and the session will be managed via stateless authentication with JWT.
+- The backend service will provide three routes: one to register users, one to log them in, and a third one to handle
+  the 2FA process if it's enabled. The communication protocol will be HTTP, and the session will be managed via
+  stateless authentication with JWT.
 
-- The service will operate inside a micro-services architecture and will be shipped inside a Docker image for deployment in the cloud. We will use PostgreSQL as the database for storing user information.
+- The service will operate inside a micro-services architecture and will be shipped inside a Docker image for deployment
+  in the cloud. We will use PostgreSQL as the database for storing user information.
 
-- We will use Pydantic for data validation and FastAPI for building the web service. We will also use pytest for automated testing.
+- We will use Pydantic for data validation and FastAPI for building the web service. We will also use pytest for
+  automated testing.
 
-- For the OTP email sending, we will use a fake implementation that logs the OTP on the console instead of sending the email for real. This simplifies the implementation and testing process.
+- For the OTP email sending, we will use a fake implementation that logs the OTP on the console instead of sending the
+  email for real. This simplifies the implementation and testing process.
