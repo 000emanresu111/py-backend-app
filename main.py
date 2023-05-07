@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import models
 from app.database import engine
-from app.routers import root, registration
+from app.routers import root, registration, login
 
 try:
     models.Base.metadata.create_all(bind=engine)
@@ -14,3 +14,4 @@ app = FastAPI()
 
 app.include_router(root.router)
 app.include_router(registration.router)
+app.include_router(login.router)

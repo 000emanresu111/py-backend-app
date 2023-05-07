@@ -29,10 +29,15 @@ Go to http://localhost:8086/docs to see the API documentation and interact with 
 
 ### Test
 
+#### Run tests
+```bash
+$ pytest -vv
+```
+
 #### Run single test file
 
 ```bash
-$ pytest test/test_file_to_run.py
+$ pytest test/test_file_to_run.py -vv
 ```
 
 Example:

@@ -31,6 +31,7 @@ def create_user(db: Session, user: schema.User) -> schema.User:
         raise HTTPException(status_code=400, detail="Username already registered")
 
     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
+    hashed_password = hashed_password.decode('utf8')
 
     db_user = models.UserInfo(username=user.username, password=hashed_password, email=user.email, is_2fa_enabled=user.is_2fa_enabled)
     db.add(db_user)
