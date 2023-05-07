@@ -14,7 +14,7 @@ $ docker compose up
 
 ### Launch server
 ```bash
-$ uvicorn main:app --host localhost --port 8086 --reload
+$ uvicorn app.main:app --host localhost --port 8086 --reload
 ```
 
 ### API documentation
