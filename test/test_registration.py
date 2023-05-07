@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
+from app import schema
 
 from main import app
 
@@ -38,3 +39,24 @@ class TestUserRegistration:
 
             assert response.status_code == 200
             assert response.json() == expected_output
+
+    def test_create_user(self):
+        email = "test2@example2.com"
+        password = "password1"
+        username = "Test User"
+        is_2fa_enabled = True
+
+        user = schema.User(email=email, password=password, username=username, is_2fa_enabled=is_2fa_enabled)
+
+        db = MagicMock()
+        db.query.return_value.filter.return_value.first.return_value = None
+        db.add.return_value = None
+        db.commit.return_value = None
+        db.refresh.return_value = None
+
+        with patch("app.crud.create_user", return_value=user):
+            response = client.post("/users", json={"username": username, "email": email, "password": password,
+                                                            "is_2fa_enabled": is_2fa_enabled})
+
+            assert response.status_code == 201
+            assert response.json() == user.dict()
