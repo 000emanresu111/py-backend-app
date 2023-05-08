@@ -34,23 +34,6 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-async def check_username_password(db: Session, user: schema.UserAuthenticate) -> bool:
-    db_user_info: Optional[models.UserInfo] = crud.get_user_by_username(
-        db, username=user.username
-    )
-
-    db_password: bytes = db_user_info.password.encode("utf-8")
-    request_password: bytes = user.password.encode("utf-8")
-
-    if not db_user_info or not bcrypt.checkpw(request_password, db_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
-
-    return True
-
-
 def encode_jwt_token(data: Dict, expires_delta: Optional[timedelta] = None) -> str:
     payload = data.copy()
 
@@ -108,35 +91,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=JWT_ALGORITHM)
     return encoded_jwt
-
-
-async def get_current_user(
-    db: Session = Depends(database.get_db), token: str = Depends(oauth2_scheme)
-) -> schema.User:
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
-        username: str = payload.get("sub")
-
-        if username is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        token_data = schema.TokenData(username=username)
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    user = crud.get_user_by_username(db, username=token_data.username)
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-    return user
 
 
 def verify_otp_code(db: Session, username: str, otp_code: str):

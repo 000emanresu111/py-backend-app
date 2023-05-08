@@ -20,4 +20,3 @@ class TestUserLogin:
 
     def test_authenticate_user(self):
         pass
-

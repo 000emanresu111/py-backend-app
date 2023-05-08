@@ -12,10 +12,10 @@ def test_root_endpoint():
     payload = {
         "sub": "1234321",
         "name": "test-name",
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
     }
 
-    jwt_token = jwt.encode(payload, 'secret_key', algorithm='HS256')
+    jwt_token = jwt.encode(payload, "secret_key", algorithm="HS256")
 
     headers = {"Authorization": f"Bearer {jwt_token}"}
 
