@@ -69,5 +69,6 @@ def create_otp_info(secret: str, db: Session, user: schema.User) -> models.Users
 
 
 def get_otp_by_username(db: Session, username: str):
-    return db.query(models.UsersOTP).filter(models.UsersOTP.username == username).first()
-
+    return (
+        db.query(models.UsersOTP).filter(models.UsersOTP.username == username).first()
+    )

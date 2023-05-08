@@ -126,5 +126,3 @@ print("users_otp table populated successfully")
 
 cur.close()
 conn.close()
-
-

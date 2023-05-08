@@ -34,9 +34,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-async def check_username_password(
-    db: Session, user: schema.UserAuthenticate
-) -> bool:
+async def check_username_password(db: Session, user: schema.UserAuthenticate) -> bool:
     db_user_info: Optional[models.UserInfo] = crud.get_user_by_username(
         db, username=user.username
     )

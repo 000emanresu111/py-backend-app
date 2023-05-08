@@ -27,10 +27,10 @@ async def verify_2fa(
 
     if otp_code != otp:
         raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or OTP",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or OTP",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     access_token_expires = timedelta(minutes=auth.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token_data = {"sub": user.username}

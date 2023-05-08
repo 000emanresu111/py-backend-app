@@ -22,6 +22,7 @@ class User2FA(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
 
+
 class UserAuthenticate(BaseModel):
     username: str
     password: str
