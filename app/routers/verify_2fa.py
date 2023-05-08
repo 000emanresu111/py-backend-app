@@ -18,6 +18,12 @@ async def verify_2fa(
     otp_code: str = Form(...),
 ):
     user = crud.get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     otp = crud.get_otp_by_username(db, username).__dict__.get("otp")
 
