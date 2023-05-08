@@ -4,9 +4,6 @@
 optional 2FA.
 
 ### Clone the Repository
-
-First, clone the repository:
-
 ```bash
 $ git clone https://github.com/000emanresu111/py-backend-app.git
 ```
@@ -34,23 +31,11 @@ Go to http://localhost:8086/docs to see the API documentation and interact with 
 $ pytest -vv
 ```
 
-#### Run single test file
-
-```bash
-$ pytest test/test_file_to_run.py -vv
-```
-
-Example:
-
-```bash
-$ pytest -s test/test_users.py -vv
-```
-
 ### Code formatting
 
 This project uses [black](https://github.com/psf/black) code formatter.
 
-## Solution overview
+### Project description
 
 - The backend service will provide three routes: one to register users, one to log them in, and a third one to handle
   the 2FA process if it's enabled. The communication protocol will be HTTP, and the session will be managed via
@@ -64,3 +49,66 @@ This project uses [black](https://github.com/psf/black) code formatter.
 
 - For the OTP email sending, we will use a fake implementation that logs the OTP on the console instead of sending the
   email for real. This simplifies the implementation and testing process.
+
+### Example
+
+You can register a user, then log in and verify the 2FA (OTP) code.
+
+#### 1) Signup
+
+Request
+```bash
+POST /users
+{
+  "email": "test01@example.com",
+  "password": "test",
+  "username": "test01",
+  "is_2fa_enabled": true
+}
+```
+
+Response body
+```bash
+{
+  "email": "test01@example.com",
+  "password": "$2b$12$Gp2bpwLXo.D8nGaRin9/VO4JfTqAPpmH1fUSSRi.8.5s389QJ.8py",
+  "username": "test01",
+  "is_2fa_enabled": true
+}
+```
+
+#### 2) Login
+
+Request
+```bash
+curl -X 'POST' \
+  'http://localhost:8086/login' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'username=test01&password=test&send_otp=true'
+```
+
+Response body
+```bash
+{
+  "detail": "Please provide the following OTP: 602580"
+}
+```
+#### 3) Verify 2FA
+
+Request
+```bash
+curl -X 'POST' \
+  'http://localhost:8086/verify-2fa' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'username=test01&otp_code=602580'
+```
+
+Response body
+```bash
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0MDEiLCJleHAiOjE2ODM1NjgzMjR9.XOx1ZW8usgKG2_nDdccvvMcNSSPBn88ZdTRC9ObzKxM",
+  "token_type": "bearer"
+}
+```
