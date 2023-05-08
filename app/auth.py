@@ -31,18 +31,16 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def check_username_password(db: Session, user: schema.UserAuthenticate) -> bool:
-    db_user_info: models.UserInfo = crud.get_user_by_username(
-        db, username=user.username
-    )
+async def check_username_password(db: AsyncSession, user: schema.UserAuthenticate) -> bool:
+    db_user_info: Optional[models.UserInfo] = await crud.get_user_by_username(db, username=user.username)
 
-    if not db_user_info:
-        return False
-
-    db_password: bytes = db_user_info.password
+    db_password: bytes = db_user_info.password.encode("utf-8")
     request_password: bytes = user.password.encode("utf-8")
 
-    return bcrypt.checkpw(request_password, db_password)
+    if not db_user_info or not bcrypt.checkpw(request_password, db_password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
+
+    return True
 
 
 def encode_jwt_token(data: Dict, expires_delta: Optional[timedelta] = None) -> str:

@@ -29,9 +29,9 @@ class TestUserAuth(unittest.TestCase):
         assert pwd_context.verify("password", password_hash) is True
         assert pwd_context.verify("wrong-password", password_hash) is False
 
-    def test_mock_check_username_password(self):
-        username = "testuser"
-        password = "testpassword"
+    async def test_mock_check_username_password(self):
+        username = "test-user"
+        password = "test-password"
 
         user = models.UserInfo(
             username=username,
@@ -43,12 +43,12 @@ class TestUserAuth(unittest.TestCase):
         crud.get_user_by_username = MagicMock(return_value=user)
 
         with patch("app.crud.get_user_by_username", return_value=user):
-            assert check_username_password(
+            assert await check_username_password(
                 db, schema.UserAuthenticate(username=username, password=password)
             )
-            assert not check_username_password(
+            assert not await check_username_password(
                 db,
-                schema.UserAuthenticate(username=username, password="wrong_password"),
+                schema.UserAuthenticate(username=username, password="wrong-password"),
             )
 
     def test_encode_jwt_token(self):
