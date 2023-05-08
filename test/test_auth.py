@@ -57,7 +57,8 @@ class TestUserAuth(unittest.TestCase):
         data = {"sub": "test@test.com"}
         expires_delta = 30
 
-        token = auth.create_access_token(data, expires_delta)
+        token = auth.create_access_token(data, timedelta(expires_delta))
+        print(token)
 
         decoded = jwt.decode(token, auth.SECRET_KEY, algorithms=[auth.JWT_ALGORITHM])
         assert decoded["sub"] == "test@test.com"

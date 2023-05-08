@@ -1,6 +1,7 @@
 import logging as logger
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Union
+from sqlalchemy.orm import Session
 
 import bcrypt
 import jwt
@@ -66,10 +67,14 @@ async def authenticate_user(
     db: AsyncSession, username: str, password: str
 ) -> Optional[schema.User]:
     try:
-        user = await crud.get_user_by_username(db, username)
+        user = crud.get_user_by_username(db, username)
         if not user or not verify_password(password, user.password):
-            return None
-        return schema.User(id=user.id, username=user.username, password=user.password)
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return schema.User(username=user.username, password=user.password, email=user.email, is_2fa_enabled=user.is_2fa_enabled)
     except ValidationError as e:
         logger.error(f"Validation error in authenticate_user: {e}")
         return None
@@ -78,10 +83,10 @@ async def authenticate_user(
         raise e
 
 
-def create_access_token(data: dict, expires_delta: Union[Optional[int], Optional[timedelta]] = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + timedelta(minutes=expires_delta)
+        expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})

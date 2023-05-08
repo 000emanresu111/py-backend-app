@@ -13,7 +13,7 @@ def get_all_users(db: Session) -> List[Type[UserInfo]]:
     return db.query(models.UserInfo).all()
 
 
-def get_user_by_username(db: Union[Session, AsyncSession], username: str):
+def get_user_by_username(db: Session, username: str) -> Optional[schema.User]:
     return db.query(models.UserInfo).filter(models.UserInfo.username == username).first()
 
 
