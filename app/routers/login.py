@@ -4,7 +4,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status, Form
 from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app import auth, crud

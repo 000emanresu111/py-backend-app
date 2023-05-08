@@ -1,9 +1,8 @@
 from typing import List, Type, Optional
+
 import bcrypt
-from sqlalchemy.orm import Session
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Union
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from app import models, schema
 from app.models import UserInfo

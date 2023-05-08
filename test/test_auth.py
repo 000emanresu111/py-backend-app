@@ -1,9 +1,7 @@
 import unittest
-from datetime import datetime
 from datetime import timedelta
 from unittest.mock import MagicMock, AsyncMock
 from unittest.mock import patch
-from sqlalchemy.ext.asyncio import AsyncSession
 
 import bcrypt
 import jwt

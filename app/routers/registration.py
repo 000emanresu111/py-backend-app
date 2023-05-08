@@ -2,7 +2,6 @@ from typing import List
 
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app import schema

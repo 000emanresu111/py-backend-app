@@ -1,16 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Form
-from app.auth import create_access_token
 from datetime import timedelta
+
+from fastapi import APIRouter, Depends, HTTPException, status, Form
+from sqlalchemy.orm import Session
+
 from app import auth
 from app import crud
-from fastapi import APIRouter, Depends, HTTPException, status, Form
-from datetime import timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
-import random
-from app import crud, models, schema
+from app.auth import create_access_token
 from app.database import get_db
-from sqlalchemy.orm import Session
-from fastapi import Header
 
 router = APIRouter()
 

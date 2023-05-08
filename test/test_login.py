@@ -1,11 +1,6 @@
-from fastapi.testclient import TestClient
-from unittest.mock import MagicMock
-from app.database import get_db
-from fastapi import HTTPException
-from sqlalchemy.orm import Session
-from app.routers.login import authenticate_user
-from app import crud, schema, auth
 from unittest import mock
+
+from fastapi.testclient import TestClient
 
 from main import app
 

@@ -1,21 +1,21 @@
 import logging as logger
 from datetime import datetime, timedelta
-from typing import Dict, Optional
-from datetime import datetime, timedelta
-from jwt import decode, InvalidTokenError
+from typing import Dict
+from typing import Optional
 
 import bcrypt
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
+from jwt import decode, InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app import database
-from app import models, schema, crud, auth
+from app import models, schema, crud
 
 SECRET_KEY = "5b6e92308fa8806e55d8848cd88882a31e44cd5c65fa7fc9f8a8550616898b04"
 JWT_ALGORITHM = "HS256"
