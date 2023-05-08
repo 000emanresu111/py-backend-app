@@ -10,8 +10,8 @@ from jose import jwt, JWTError
 from passlib.context import CryptContext
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
 
+from app import database
 from app import models, schema, crud
 
 SECRET_KEY = "5b6e92308fa8806e55d8848cd88882a31e44cd5c65fa7fc9f8a8550616898b04"
@@ -31,14 +31,21 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-async def check_username_password(db: AsyncSession, user: schema.UserAuthenticate) -> bool:
-    db_user_info: Optional[models.UserInfo] = await crud.get_user_by_username(db, username=user.username)
+async def check_username_password(
+    db: AsyncSession, user: schema.UserAuthenticate
+) -> bool:
+    db_user_info: Optional[models.UserInfo] = await crud.get_user_by_username(
+        db, username=user.username
+    )
 
     db_password: bytes = db_user_info.password.encode("utf-8")
     request_password: bytes = user.password.encode("utf-8")
 
     if not db_user_info or not bcrypt.checkpw(request_password, db_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+        )
 
     return True
 
@@ -82,10 +89,13 @@ def create_access_token(data: dict, expires_delta: Optional[int] = None):
     return encoded_jwt
 
 
-def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
+async def get_current_user(
+    db: AsyncSession = Depends(database.get_db), token: str = Depends(oauth2_scheme)
+) -> schema.User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
         username: str = payload.get("sub")
+
         if username is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -100,7 +110,9 @@ def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = crud.get_user_by_username(db, username=token_data.username)
+    user = await crud.get_user_by_username(db, username=token_data.username)
     if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return user

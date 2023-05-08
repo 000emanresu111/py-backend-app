@@ -1,6 +1,8 @@
 from typing import List, Type, Optional
 import bcrypt
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Union
 from fastapi import HTTPException
 
 from app import models, schema
@@ -11,7 +13,7 @@ def get_all_users(db: Session) -> List[Type[UserInfo]]:
     return db.query(models.UserInfo).all()
 
 
-def get_user_by_username(db: Session, username: str):
+def get_user_by_username(db: Union[Session, AsyncSession], username: str):
     return db.query(models.UserInfo).filter(models.UserInfo.username == username).first()
 
 

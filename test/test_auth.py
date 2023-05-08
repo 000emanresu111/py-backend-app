@@ -1,19 +1,21 @@
-from unittest.mock import MagicMock, patch
-from sqlalchemy.orm import Session
-from app import crud, models, schema
-from app.auth import check_username_password, encode_jwt_token
-import bcrypt
 import unittest
-import jwt
+from datetime import datetime
 from datetime import timedelta
-from app import auth
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import patch
+from sqlalchemy.ext.asyncio import AsyncSession
+
+import bcrypt
+import jwt
 from sqlalchemy.orm import Session
-from app.schema import User
-from app.crud import get_user_by_username
-from app.auth import verify_password
+
+from app import auth
+from app import crud, models, schema
 from app.auth import authenticate_user
+from app.auth import check_username_password, encode_jwt_token
 from app.auth import pwd_context
+from app.auth import verify_password
+from app.schema import User
 
 
 class TestUserAuth(unittest.TestCase):
@@ -51,6 +53,15 @@ class TestUserAuth(unittest.TestCase):
                 schema.UserAuthenticate(username=username, password="wrong-password"),
             )
 
+    def test_create_access_token(self):
+        data = {"sub": "test@test.com"}
+        expires_delta = 30
+
+        token = auth.create_access_token(data, expires_delta)
+
+        decoded = jwt.decode(token, auth.SECRET_KEY, algorithms=[auth.JWT_ALGORITHM])
+        assert decoded["sub"] == "test@test.com"
+
     def test_encode_jwt_token(self):
         data = {"user_id": 1234, "email": "test@test.com"}
         expires_delta = timedelta(minutes=30)
@@ -84,3 +95,23 @@ class TestUserAuth(unittest.TestCase):
         assert authenticated_user is None
 
         auth.verify_password.assert_called_once_with("test-password", "test-password")
+
+    async def test_get_current_user(self):
+        db = AsyncMock()
+        user = schema.User(id=1, username="test-user", email="test@test.com")
+        crud.get_user_by_username = AsyncMock(return_value=user)
+        token_data = schema.TokenData(username="test-user")
+        token = "valid-token"
+        payload = {"sub": "test-user"}
+
+        with patch("jwt.decode", return_value=payload) as mock_jwt_decode:
+            result = await auth.get_current_user(db=db, token=token)
+
+            assert result != user
+
+            mock_jwt_decode.assert_called_once_with(
+                token, auth.SECRET_KEY, algorithms=[auth.JWT_ALGORITHM]
+            )
+            crud.get_user_by_username.assert_called_once_with(
+                db, username=token_data.username
+            )
