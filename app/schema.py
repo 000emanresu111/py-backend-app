@@ -19,6 +19,7 @@ class UserAuthenticate(BaseModel):
     password: str
 
 
-class Token(BaseModel):
+class TokenData(BaseModel):
+    username: str
     access_token: str
     token_type: str
