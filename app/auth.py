@@ -1,6 +1,6 @@
 import logging as logger
 from datetime import datetime, timedelta
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 import bcrypt
 import jwt
@@ -78,7 +78,7 @@ async def authenticate_user(
         raise e
 
 
-def create_access_token(data: dict, expires_delta: Optional[int] = None):
+def create_access_token(data: dict, expires_delta: Union[Optional[int], Optional[timedelta]] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + timedelta(minutes=expires_delta)
