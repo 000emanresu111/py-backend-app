@@ -34,7 +34,7 @@ async def login(
     db: AsyncSession = Depends(get_db),
     username: str = Form(...),
     password: str = Form(...),
-    send_otp: Optional[bool] = Form(False)
+    send_otp: Optional[bool] = Form(False),
 ):
     user = await auth.authenticate_user(db, username, password)
     if not user:

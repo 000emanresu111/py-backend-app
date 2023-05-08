@@ -15,17 +15,22 @@ conn.autocommit = True
 cur = conn.cursor()
 cur.execute("SELECT 1 FROM pg_database WHERE datname='backend_db'")
 if cur.fetchone():
-    cur.execute("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'backend_db';")
+    cur.execute(
+        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'backend_db';"
+    )
     cur.execute("DROP DATABASE backend_db")
     print("backend_db database dropped successfully")
 
 cur.execute("CREATE DATABASE backend_db")
 print("backend_db database created successfully")
 
-cur.execute("SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'users')")
+cur.execute(
+    "SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'users')"
+)
 exists = cur.fetchone()[0]
 if not exists:
-    cur.execute("""
+    cur.execute(
+        """
         CREATE TABLE users (
             id SERIAL PRIMARY KEY,
             email VARCHAR(255) NOT NULL,
@@ -33,7 +38,8 @@ if not exists:
             username VARCHAR(255) NOT NULL,
             is_2fa_enabled BOOLEAN NOT NULL
         )
-    """)
+    """
+    )
     print("users table created successfully")
 
 emails = ["test1@example.com", "test2@example.com", "test3@example.com"]
@@ -43,10 +49,13 @@ is_2fa_enabled_values = [True, False]
 
 values = product(emails, passwords, usernames, is_2fa_enabled_values)
 
-cur.executemany("""
+cur.executemany(
+    """
     INSERT INTO users (email, password, username, is_2fa_enabled)
     VALUES (%s, %s, %s, %s)
-""", values)
+""",
+    values,
+)
 print("users table populated successfully")
 
 cur.close()

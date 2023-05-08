@@ -10,6 +10,3 @@ client = TestClient(app)
 
 class TestUserRegistration:
     pass
-
-
-

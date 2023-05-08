@@ -55,7 +55,12 @@ class TestCrud(unittest.TestCase):
         username = "Test User"
         is_2fa_enabled = True
 
-        user = schema.User(email=email, password=password, username=username, is_2fa_enabled=is_2fa_enabled)
+        user = schema.User(
+            email=email,
+            password=password,
+            username=username,
+            is_2fa_enabled=is_2fa_enabled,
+        )
 
         db = MagicMock()
         db.query.return_value.filter.return_value.first.return_value = None
@@ -64,8 +69,15 @@ class TestCrud(unittest.TestCase):
         db.refresh.return_value = None
 
         with patch("app.crud.create_user", return_value=user):
-            response = client.post("/users", json={"username": username, "email": email, "password": password,
-                                                   "is_2fa_enabled": is_2fa_enabled})
+            response = client.post(
+                "/users",
+                json={
+                    "username": username,
+                    "email": email,
+                    "password": password,
+                    "is_2fa_enabled": is_2fa_enabled,
+                },
+            )
 
             assert response.status_code == 201
             assert response.json() == user.dict()

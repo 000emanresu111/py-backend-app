@@ -74,7 +74,12 @@ async def authenticate_user(
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        return schema.User(username=user.username, password=user.password, email=user.email, is_2fa_enabled=user.is_2fa_enabled)
+        return schema.User(
+            username=user.username,
+            password=user.password,
+            email=user.email,
+            is_2fa_enabled=user.is_2fa_enabled,
+        )
     except ValidationError as e:
         logger.error(f"Validation error in authenticate_user: {e}")
         return None
