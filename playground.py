@@ -13,6 +13,7 @@ conn = psycopg2.connect(**db_params)
 conn.autocommit = True
 
 cur = conn.cursor()
+
 cur.execute("SELECT 1 FROM pg_database WHERE datname='backend_db'")
 if cur.fetchone():
     cur.execute(
@@ -58,5 +59,72 @@ cur.executemany(
 )
 print("users table populated successfully")
 
+cur.execute(
+    "SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'users')"
+)
+exists = cur.fetchone()[0]
+if not exists:
+    cur.execute(
+        """
+        CREATE TABLE users (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            username VARCHAR(255) NOT NULL,
+            is_2fa_enabled BOOLEAN NOT NULL
+        )
+    """
+    )
+    print("users table created successfully")
+
+emails = ["test1@example.com", "test2@example.com", "test3@example.com"]
+passwords = ["password1", "password2", "password3"]
+usernames = ["User1", "User2", "User3"]
+is_2fa_enabled_values = [True, False]
+
+values = product(emails, passwords, usernames, is_2fa_enabled_values)
+
+cur.executemany(
+    """
+    INSERT INTO users (email, password, username, is_2fa_enabled)
+    VALUES (%s, %s, %s, %s)
+""",
+    values,
+)
+print("users table populated successfully")
+
+
+cur.execute(
+    "SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'users_otp')"
+)
+exists = cur.fetchone()[0]
+if not exists:
+    cur.execute(
+        """
+        CREATE TABLE users_otp (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(255) NOT NULL,
+            otp VARCHAR(255) NOT NULL
+        )
+    """
+    )
+    print("users_otp table created successfully")
+
+otps = ["1234", "4321", "5678"]
+usernames = ["User1", "User2", "User3"]
+
+values = product(usernames, otps)
+
+cur.executemany(
+    """
+    INSERT INTO users_otp (username, otp)
+    VALUES (%s, %s)
+""",
+    values,
+)
+print("users_otp table populated successfully")
+
 cur.close()
 conn.close()
+
+

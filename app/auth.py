@@ -1,7 +1,8 @@
 import logging as logger
 from datetime import datetime, timedelta
-from typing import Dict, Optional, Union
-from sqlalchemy.orm import Session
+from typing import Dict, Optional
+from datetime import datetime, timedelta
+from jwt import decode, InvalidTokenError
 
 import bcrypt
 import jwt
@@ -11,9 +12,10 @@ from jose import jwt, JWTError
 from passlib.context import CryptContext
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app import database
-from app import models, schema, crud
+from app import models, schema, crud, auth
 
 SECRET_KEY = "5b6e92308fa8806e55d8848cd88882a31e44cd5c65fa7fc9f8a8550616898b04"
 JWT_ALGORITHM = "HS256"
@@ -33,9 +35,9 @@ def get_password_hash(password):
 
 
 async def check_username_password(
-    db: AsyncSession, user: schema.UserAuthenticate
+    db: Session, user: schema.UserAuthenticate
 ) -> bool:
-    db_user_info: Optional[models.UserInfo] = await crud.get_user_by_username(
+    db_user_info: Optional[models.UserInfo] = crud.get_user_by_username(
         db, username=user.username
     )
 
@@ -61,6 +63,17 @@ def encode_jwt_token(data: Dict, expires_delta: Optional[timedelta] = None) -> s
 
     encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
     return encoded_jwt
+
+
+def decode_access_token(token: str) -> dict:
+    try:
+        decoded_token = decode(token, SECRET_KEY, JWT_ALGORITHM)
+        exp_timestamp = decoded_token["exp"]
+        if datetime.utcnow() > datetime.fromtimestamp(exp_timestamp):
+            raise InvalidTokenError("Token has expired")
+        return decoded_token
+    except InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 async def authenticate_user(
@@ -100,7 +113,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 
 async def get_current_user(
-    db: AsyncSession = Depends(database.get_db), token: str = Depends(oauth2_scheme)
+    db: Session = Depends(database.get_db), token: str = Depends(oauth2_scheme)
 ) -> schema.User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
@@ -120,9 +133,14 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = await crud.get_user_by_username(db, username=token_data.username)
+    user = crud.get_user_by_username(db, username=token_data.username)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
     return user
+
+
+def verify_otp_code(db: Session, username: str, otp_code: str):
+    stored_otp = crud.get_otp_by_username(db, username)
+    return otp_code == stored_otp

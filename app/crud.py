@@ -53,3 +53,21 @@ def create_user(db: Session, user: schema.User) -> schema.User:
 def delete_all_users(db: Session):
     db.query(models.UserInfo).delete()
     db.commit()
+
+
+def create_otp_info(secret: str, db: Session, user: schema.User) -> models.UsersOTP:
+    db_user = models.UsersOTP(
+        username=user.username,
+        otp=secret,
+    )
+
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user
+
+
+def get_otp_by_username(db: Session, username: str):
+    return db.query(models.UsersOTP).filter(models.UsersOTP.username == username).first()
+

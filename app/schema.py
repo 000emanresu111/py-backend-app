@@ -14,6 +14,14 @@ class User(BaseModel):
         allow_population_by_field_name = True
 
 
+class User2FA(BaseModel):
+    username: str
+    otp: str
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
 class UserAuthenticate(BaseModel):
     username: str
     password: str
