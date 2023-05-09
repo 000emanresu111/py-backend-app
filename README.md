@@ -18,7 +18,7 @@ $ poetry install # or "make install"
 #### 3) Run docker compose
 
 ```bash
-$ docker compose up --build
+$ docker compose up
 ```
 #### 4) Populate db
 

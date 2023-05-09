@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
 
 from app.config import Settings
 
@@ -9,7 +10,7 @@ settings = Settings(
     POSTGRES_PASSWORD="password123",
     POSTGRES_USER="postgres",
     POSTGRES_DB="backend_db",
-    POSTGRES_HOST="db_postgres",
+    POSTGRES_HOST=os.environ.get("POSTGRES_HOST", "127.0.0.1")
 )
 
 POSTGRES_URL = f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.DATABASE_PORT}/{settings.POSTGRES_DB}"
