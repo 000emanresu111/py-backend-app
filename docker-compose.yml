@@ -1,5 +1,9 @@
 version: '3.9'
 
+networks:
+  my-network:
+    driver: bridge
+
 services:
   db:
     image: postgres
@@ -12,7 +16,29 @@ services:
       - ./.env
     volumes:
       - postgres-db:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    restart: always
+    hostname: app
+    ports:
+      - '8086:8086'
+    env_file:
+      - ./.env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    networks:
+      - my-network
 
 volumes:
   postgres-db:
+    driver: local
+  app:
     driver: local

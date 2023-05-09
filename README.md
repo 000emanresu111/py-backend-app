@@ -3,26 +3,37 @@
 [FastAPI](https://fastapi.tiangolo.com)-based backend service which implements registration and login services with
 optional 2FA.
 
-### Clone the Repository
+#### 1) Clone the Repository
 ```bash
 $ git clone https://github.com/000emanresu111/py-backend-app.git
 ```
+#### 2) Install deps with Poetry
 
-### Run PostgreSQL docker image
-
-```bash
-$ docker compose up
-```
-
-### Launch server
+Ensure you have [Poetry](https://python-poetry.org) installed.
 
 ```bash
-$ uvicorn main:app --host localhost --port 8086 --reload
+$ poetry install # or "make install"
 ```
 
-### API documentation
+#### 3) Run docker compose
+
+```bash
+$ docker compose up --build
+```
+#### 4) Populate db
+
+```bash
+$ python playground.py
+```
+#### 5) API documentation
 
 Go to http://localhost:8086/docs to see the API documentation and interact with it.
+
+#### Launch server manually (if needed)
+
+```bash
+$ uvicorn main:app --host 0.0.0.0 --port 8086 --reload
+```
 
 ### Test
 

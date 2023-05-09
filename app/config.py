@@ -7,7 +7,6 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_DB: str
     POSTGRES_HOST: str
-    POSTGRES_HOSTNAME: str
 
     class Config:
         env_file = "\\.env"

@@ -2,7 +2,7 @@ import psycopg2
 from itertools import product
 
 db_params = {
-    "host": "127.0.0.1",
+    "host": "localhost",
     "port": 5432,
     "user": "postgres",
     "password": "password123",

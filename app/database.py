@@ -9,11 +9,10 @@ settings = Settings(
     POSTGRES_PASSWORD="password123",
     POSTGRES_USER="postgres",
     POSTGRES_DB="backend_db",
-    POSTGRES_HOST="postgres",
-    POSTGRES_HOSTNAME="127.0.0.1",
+    POSTGRES_HOST="db_postgres",
 )
 
-POSTGRES_URL = f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOSTNAME}:{settings.DATABASE_PORT}/{settings.POSTGRES_DB}"
+POSTGRES_URL = f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.DATABASE_PORT}/{settings.POSTGRES_DB}"
 
 engine = create_engine(POSTGRES_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
